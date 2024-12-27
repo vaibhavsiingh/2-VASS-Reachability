@@ -34,5 +34,5 @@ for lps in lps_list:
     reachable, iterations = is_reachable(start_vector, target_vector, lps, False)
     print(f"Target {target_vector} reachable: {reachable}")
     if reachable:
-        print(f"Loop iterations required: {iterations}")
+        # print(f"Loop iterations required: {iterations}")
         break
