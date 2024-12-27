@@ -5,7 +5,6 @@ import numpy as np
 
 
 def simulate_path(current: Vector2D, scheme: LinearPathScheme, iterations: List[int], debug: bool = True) -> Tuple[bool, Optional[Vector2D]]:
-    """Simulates the path with given iterations and returns if valid and final position"""
     pos = current
     
     if debug:

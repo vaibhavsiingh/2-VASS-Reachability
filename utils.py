@@ -1,7 +1,6 @@
 from defintion import *
 
 def apply_vectors(pos: Vector2D, vectors: List[Vector2D], debug: bool = True) -> Tuple[bool, Vector2D]:
-    """Apply a list of vectors to a position and check validity"""
     for i, vec in enumerate(vectors):
         pos = pos + vec
         if debug:
@@ -13,12 +12,10 @@ def apply_vectors(pos: Vector2D, vectors: List[Vector2D], debug: bool = True) ->
     return True, pos
 
 def sum_vectors(vectors: List[Vector2D]) -> Vector2D:
-    """Helper function to sum a list of vectors"""
     return sum((vec for vec in vectors), Vector2D(0, 0))
 
 
 def compute_path_effect(vass: VASS2D, path: List[int]) -> Vector2D:
-    """Compute the total effect vector of a path."""
     effect = Vector2D(0, 0)
     for i in range(len(path) - 1):
         current = path[i]
@@ -30,7 +27,6 @@ def compute_path_effect(vass: VASS2D, path: List[int]) -> Vector2D:
     return effect
 
 def compute_guard(vass: VASS2D, cycle: List[int]) -> Tuple[int, int]:
-    """Compute the guard for a cycle."""
     min_x = min_y = 0
     current_x = current_y = 0
     
@@ -48,7 +44,6 @@ def compute_guard(vass: VASS2D, cycle: List[int]) -> Tuple[int, int]:
     return (abs(min_x), abs(min_y))
 
 def find_simple_paths(vass: VASS2D, start: int, end: int, max_length: int) -> List[List[int]]:
-    """Find all simple paths from start to end state with length <= max_length."""
     def dfs(current: int, path: List[int], visited: Set[int], paths: List[List[int]]):
         if len(path) > max_length:
             return
@@ -72,7 +67,6 @@ def find_simple_paths(vass: VASS2D, start: int, end: int, max_length: int) -> Li
 
 
 def find_cycles(vass: VASS2D, state: int) -> List[Loop]:
-    """Find all cycles for a given state, including self-loops."""
     cycles = []
     
     # Add self-loops explicitly
@@ -84,7 +78,6 @@ def find_cycles(vass: VASS2D, state: int) -> List[Loop]:
             ))
     
     def find_complex_cycles(current: int, path: List[int], visited: Set[int]):
-        """Recursively find complex cycles."""
         for next_state, vector in vass.get_transitions(current):
             if next_state == state:
                 # Add non-trivial cycles
