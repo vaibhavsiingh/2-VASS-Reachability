@@ -1,37 +1,39 @@
 from defintion import *
 from generate_lps import generate_linear_path_schemas   
 from reachabilty_lps import is_reachable
+from utils import convert_json_to_vass
+import argparse
+import json
+import sys
+import os
 
-vass = VASS2D({
-        0: State(0, [
-            (1, Vector2D(1, 1)),  
-            (2, Vector2D(1, 0))   
-        ]),
-        1: State(1, [
-            (1, Vector2D(2, -1)), 
-            (2, Vector2D(0, 1)),  
-            (3, Vector2D(1, 0))
-        ]),
-        2: State(2, [
-            (2, Vector2D(-1, 2)), 
-            (1, Vector2D(1, 0)),  
-            (3, Vector2D(0, 1))   
-        ]),
-        3: State(3, [])
-    })
+if __name__ == '__main__':
+    
+    if '--config' not in sys.argv:
+        print("Error: --config argument is required")
+        sys.exit(1)
 
-start_state = 0
-end_state = 3
-start_vector = Vector2D(0,0)
-target_vector = Vector2D(11,16)
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--config', type=str, help='Path to the config file')
 
-max_path_length = 5
-max_cycles = 3
+    args = parser.parse_args()
 
-lps_list = generate_linear_path_schemas(vass, start_state, end_state, max_path_length, max_cycles)
+    if not os.path.isfile(args.config):
+        print(f"Error: The file {args.config} does not exist")
+        sys.exit(1)
 
-for lps in lps_list:
-    reachable, iterations = is_reachable(start_vector, target_vector, lps, False)
-    print(f"Target {target_vector} reachable: {reachable}")
-    if reachable:
-        break
+    with open(args.config, 'r') as file:
+        json_data = json.load(file)
+
+    vass, start_state, end_state, start_vector, target_vector = convert_json_to_vass(json_data)
+    max_path_length = 5
+    max_cycles = 3
+
+    lps_list = generate_linear_path_schemas(vass, start_state, end_state, max_path_length, max_cycles)
+
+    for lps in lps_list:
+        print(lps)
+        reachable, iterations = is_reachable(start_vector, target_vector, lps, False)
+        print(f"Target {target_vector} reachable: {reachable}")
+        if reachable:
+            break

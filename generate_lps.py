@@ -32,7 +32,10 @@ def generate_linear_path_schemas(vass: VASS2D, start: int, end: int,
                 suffix_vectors=[]
             )
             schemas.append(schema)
-
+        
+        if len(all_cycles) == 0:
+            continue
+        
         all_cycles.sort(key=lambda x: x[0])
 
         ##########
@@ -40,8 +43,13 @@ def generate_linear_path_schemas(vass: VASS2D, start: int, end: int,
         ##########
         prefix_vectors = []
         first_cycle_pos = all_cycles[0][0]
-        if first_cycle_pos > 0:
-            prefix_effect = compute_path_effect(vass, path[:first_cycle_pos+1])
+        for idx in range(first_cycle_pos):
+            current_state = path[idx]
+            next_state = path[idx + 1]
+            for transition in vass.get_transitions(current_state):
+                if transition[0] == next_state:
+                    prefix_vectors.append(transition[1])
+                    break
 
         loops = [cycle for _, cycle in all_cycles]
         between_vectors = []
@@ -68,15 +76,20 @@ def generate_linear_path_schemas(vass: VASS2D, start: int, end: int,
         ##########
         suffix_vectors = []
         last_cycle_pos = all_cycles[-1][0]
-        if last_cycle_pos > 0:
-            suffix_effect = compute_path_effect(vass, path[last_cycle_pos:])
+        for idx in range(last_cycle_pos, len(path) - 1):
+            current_state = path[idx]
+            next_state = path[idx + 1]
+            for transition in vass.get_transitions(current_state):
+                if transition[0] == next_state:
+                    suffix_vectors.append(transition[1])
+                    break
         
 
         schema = LinearPathScheme(
-            prefix_vectors=[prefix_effect],
+            prefix_vectors=prefix_vectors,
             loops=loops,
             between_vectors=between_vectors,
-            suffix_vectors=[suffix_effect]
+            suffix_vectors=suffix_vectors
         )
         schemas.append(schema)
 

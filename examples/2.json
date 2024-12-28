@@ -1,0 +1,16 @@
+{
+    "states": [0, 1, 2, 3],
+    "transitions": [
+        {"from": 0, "to": 1, "vector": [1, 2]},
+        {"from": 1, "to": 2, "vector": [-1, 1]},
+        {"from": 2, "to":1, "vector": [2, -2]},
+        {"from": 1, "to": 3, "vector": [0, 3]},
+        {"from": 2, "to": 3, "vector": [1, 1]},
+        {"from": 0, "to": 2, "vector": [3, -1]},
+        {"from": 3, "to": 0, "vector": [-3, -2]}
+    ],
+    "initial_state": 0,
+    "final_state": 3,
+    "initial_vector": [0, 0],
+    "final_vector": [5, 4]
+}

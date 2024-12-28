@@ -1,5 +1,23 @@
 from defintion import *
 
+def convert_json_to_vass(json_data):
+    states = {}
+    for state_id in json_data["states"]:
+        transitions = [
+            (transition["to"], Vector2D(*transition["vector"]))
+            for transition in json_data["transitions"]
+            if transition["from"] == state_id
+        ]
+        states[state_id] = State(state_id, transitions)
+    
+    vass = VASS2D(states)
+    start_state = json_data["initial_state"]
+    end_state = json_data["final_state"]
+    start_vector = Vector2D(*json_data["initial_vector"])
+    target_vector = Vector2D(*json_data["final_vector"])
+    
+    return vass, start_state, end_state, start_vector, target_vector
+
 def apply_vectors(pos: Vector2D, vectors: List[Vector2D], debug: bool = True) -> Tuple[bool, Vector2D]:
     for i, vec in enumerate(vectors):
         pos = pos + vec
