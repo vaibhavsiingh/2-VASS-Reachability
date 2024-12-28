@@ -5,6 +5,17 @@ import numpy as np
 
 
 def simulate_path(current: Vector2D, scheme: LinearPathScheme, iterations: List[int], debug: bool = True) -> Tuple[bool, Optional[Vector2D]]:
+    """
+    Simulates the path of a vector through a series of transformations defined by a LinearPathScheme.
+    Args:
+        current (Vector2D): The starting position of the vector.
+        scheme (LinearPathScheme): The scheme defining the transformations, including prefix, between, and suffix vectors, as well as loop effects and guards.
+        iterations (List[int]): A list of integers where each integer represents the number of times to apply the corresponding loop in the scheme.
+        debug (bool, optional): If True, prints debug information during the simulation. Defaults to True.
+    Returns:
+        Tuple[bool, Optional[Vector2D]]: A tuple where the first element is a boolean indicating whether the simulation was successful, and the second element is the final position of the vector if the simulation was successful, otherwise None.
+    """
+
     pos = current
     
     if debug:
@@ -69,6 +80,19 @@ def is_reachable(
     scheme: LinearPathScheme,
     debug: bool = True
 ) -> Tuple[bool, Optional[List[int]]]:
+    
+    """
+    Determines if the target position is reachable from the start position using a given linear path scheme.
+    Args:
+        start (Vector2D): The starting position.
+        target (Vector2D): The target position.
+        scheme (LinearPathScheme): The scheme defining the path with prefix, between, and suffix vectors, as well as loops.
+        debug (bool, optional): If True, prints debug information. Defaults to True.
+    Returns:
+        Tuple[bool, Optional[List[int]]]: A tuple where the first element is a boolean indicating if the target is reachable,
+                                          and the second element is a list of integers representing the number of iterations
+                                          for each loop in the scheme if reachable, otherwise None.
+    """
     current = start
     if debug:
         print(f"\nTesting reachability from {start} to {target}")

@@ -25,6 +25,7 @@ if __name__ == '__main__':
     with open(args.config, 'r') as file:
         json_data = json.load(file)
 
+
     vass, start_state, end_state, start_vector, target_vector = convert_json_to_vass(json_data)
     n_states = len(json_data["states"])
     n_transitions = len(json_data["transitions"])
