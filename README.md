@@ -1,156 +1,106 @@
-# Linear Path Scheme Implementation
+# 2-VASS Linear Path Schema Generator
 
-A Python implementation for determining reachability in a 2D grid using vectors and loops with guard conditions.
+This project implements a system for analyzing 2-VASS (Two-Variable Vector Addition Systems with States). It includes tools for generating linear path schemas (LPS), simulating paths, and testing reachability within a 2-VASS system.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Usage](#usage)
+- [Example Configuration](#example-configuration)
+- [Files and Functionality](#files-and-functionality)
+  - [`definition.py`](#definitionpy)
+  - [`generate_lps.py`](#generate_lpspy)
+  - [`main.py`](#mainpy)
+  - [`reachability_lps.py`](#reachability_lpspy)
+- [Requirements](#requirements)
+- [How to Run](#how-to-run)
 
 ## Overview
 
-The Linear Path Scheme implementation provides a framework for analyzing and validating paths in a two-dimensional grid system. The system determines whether specific points are reachable through a combination of fixed vectors and repeatable loop patterns, while maintaining non-negative coordinate constraints and respecting guard conditions.
+A 2-VASS consists of states, transitions, and 2-dimensional vectors associated with each transition. This project allows you to:
+
+- Define 2-VASS systems using JSON configurations.
+- Generate linear path schemas that include prefix vectors, loops, between vectors, and suffix vectors.
+- Check whether a target vector is reachable from a given initial state and vector.
+
+## Usage
+
+To analyze a 2-VASS system, follow these steps:
+1. Create a JSON configuration file defining the 2-VASS system (see the example below).
+2. Use `main.py` with the `--config` flag to specify the configuration file.
+3. The program will generate linear path schemas and check reachability for the target vector.
+
+## Example Configuration
+
+Example JSON file `examples/1.json`:
+
+```json
+{
+    "states": [0, 1, 2, 3],
+    "transitions": [
+        {"from": 0, "to": 1, "vector": [1, 1]},
+        {"from": 0, "to": 2, "vector": [1, 0]},
+        {"from": 1, "to": 2, "vector": [0, 1]},
+        {"from": 2, "to": 1, "vector": [1, 0]},
+        {"from": 2, "to": 2, "vector": [-1, 2]},
+        {"from": 1, "to": 1, "vector": [2, -1]},
+        {"from": 1, "to": 3, "vector": [1, 0]},
+        {"from": 2, "to": 3, "vector": [0, 1]}
+    ],
+    "initial_state": 0,
+    "final_state": 3,
+    "initial_vector": [0, 0],
+    "final_vector": [11, 16]
+}
+```
+## Files and Functionality
+```definition.py``` \
+Defines core data structures for 2-VASS, such as:
+
+- ```Vector2D```: Represents a 2D vector with operations like addition and scaling.
+- ```Loop```: Represents a loop with an effect and guard conditions.
+- ```LinearPathScheme```: Stores prefix vectors, loops, between vectors, and suffix vectors.
+- ```State``` and ```VASS2D```: Represents states and transitions in a 2-VASS system.
+
+```generate_lps.py```\
+Implements generate_linear_path_schemas, which:
+
+- Identifies simple paths between the initial and final states.
+- Generates LPS for paths with or without cycles.
+- Supports multi-loop paths with between and suffix vectors.
+
+```main.py```\
+Entry point of the program:
+
+- Reads JSON configuration files.
+- Converts the JSON into a 2-VASS structure.
+- Generates linear path schemas and checks target vector reachability.
+
+```reachability_lps.py```\
+Implements is_reachable to:
+
+- Simulate paths based on a given LPS.
+- Check if a target vector is reachable using prefix, loop, between, and suffix vectors.
+- Uses the nnls function for solving non-negative least squares problems to find loop iterations.
 
 ## Requirements
+- Python 3.8 or higher
+- Required Python libraries:
+- ```numpy```
+-  ```scipy```
+-  ```dataclasses```
 
-- Python 3.7+
-- NumPy
-- SciPy
-
-## Installation
-
-Clone the repository and install the required dependencies:
+## How to Run
+- Install the required libraries:
 
 ```bash
 pip install numpy scipy
 ```
+- Prepare the JSON configuration file.
 
-## Core Components
+- Run the program:
 
-### Vector2D
-
-The Vector2D class serves as the foundational building block, representing positions and movements in 2D space. It provides:
-
-- Vector addition and scalar multiplication
-- Equality comparison
-- String representation
-- Coordinate access (x, y)
-
-Example:
-```python
-vector = Vector2D(1, 2)
-result = vector * 3  # Scales the vector
-sum_vector = vector + Vector2D(2, 1)  # Adds vectors
+```bash
+python main.py --config <path to your json file>
 ```
 
-### Loop
-
-The Loop class represents repeatable movement patterns with guard conditions:
-
-- ```effect```: Vector2D representing movement per iteration
-- ```guard```: Tuple(int, int) specifying minimum (x, y) coordinates required
-
-Example:
-```python
-loop = Loop(Vector2D(2, -1), (1, 1))  # Movement of (2,-1), requires x≥1, y≥1
-```
-
-### LinearPathScheme
-
-Combines multiple components into a complete path specification:
-
-```python
-scheme = LinearPathScheme(
-    prefix_vectors=[Vector2D(1, 0)],
-    loops=[Loop(Vector2D(2, -1), (1, 1))],
-    between_vectors=[[Vector2D(0, 1)]],
-    suffix_vectors=[Vector2D(0, 1)]
-)
-```
-
-## Core Functions
-
-### Path Simulation
-
-```python
-def simulate_path(current: Vector2D, 
-                 scheme: LinearPathScheme, 
-                 iterations: List[int], 
-                 debug: bool = True) -> Tuple[bool, Optional[Vector2D]]
-```
-
-Simulates complete path execution:
-1. Applies prefix vectors
-2. Executes loops with specified iterations
-3. Applies between vectors
-4. Applies suffix vectors
-5. Validates coordinates and guards
-
-### Reachability Check
-
-```python
-def is_reachable(start: Vector2D,
-                 target: Vector2D,
-                 scheme: LinearPathScheme,
-                 debug: bool = True) -> Tuple[bool, Optional[List[int]]]
-```
-
-Determines if target is reachable and finds required iterations:
-1. Calculates fixed vector effects
-2. Solves for loop iterations
-3. Verifies solution through simulation
-
-## Usage Example
-
-```python
-# Create vectors and scheme
-scheme = LinearPathScheme(
-    prefix_vectors=[Vector2D(1, 0), Vector2D(1, 2)],
-    loops=[
-        Loop(Vector2D(2, -1), (1, 1)),
-        Loop(Vector2D(-1, 2), (0, 2))
-    ],
-    between_vectors=[
-        [Vector2D(0, 1), Vector2D(0, 2)],
-        [Vector2D(1, 0)]
-    ],
-    suffix_vectors=[Vector2D(0, 1)]
-)
-
-# Check reachability
-start = Vector2D(0, 0)
-target = Vector2D(2, 8)
-reachable, iterations = is_reachable(start, target, scheme)
-
-print(f"Target reachable: {reachable}")
-if reachable:
-    print(f"Required iterations: {iterations}")
-```
-
-## Testing
-
-Run the built-in test suite:
-
-```python
-python vass_reachability.py
-```
-
-## Implementation Details
-
-### Non-negative Linear System Solver
-
-The implementation uses SciPy's Non-Negative Least Squares (NNLS) optimizer to:
-- Convert reachability into a linear system
-- Find minimum non-negative integer solutions
-- Optimize loop iterations efficiently
-
-### Validation System
-
-Comprehensive validation includes:
-- Non-negative coordinate checking
-- Guard condition enforcement
-- Solution verification through simulation
-- Detailed error reporting
-
-### Debug Support
-
-Debug mode provides:
-- Step-by-step execution traces
-- Position updates after each vector
-- Guard condition validation details
-- Solution verification results

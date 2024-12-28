@@ -35,12 +35,9 @@ def generate_linear_path_schemas(vass: VASS2D, start: int, end: int,
         
         if len(all_cycles) == 0:
             continue
-        
-        all_cycles.sort(key=lambda x: x[0])
 
-        ##########
-        #FIX THIS#
-        ##########
+        all_cycles.sort(key=lambda x: x[0])
+        
         prefix_vectors = []
         first_cycle_pos = all_cycles[0][0]
         for idx in range(first_cycle_pos):
@@ -71,9 +68,6 @@ def generate_linear_path_schemas(vass: VASS2D, start: int, end: int,
 
                 between_vectors.append(transitions)
 
-        ##########
-        #FIX THIS#
-        ##########
         suffix_vectors = []
         last_cycle_pos = all_cycles[-1][0]
         for idx in range(last_cycle_pos, len(path) - 1):
