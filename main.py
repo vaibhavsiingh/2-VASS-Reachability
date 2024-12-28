@@ -26,14 +26,17 @@ if __name__ == '__main__':
         json_data = json.load(file)
 
     vass, start_state, end_state, start_vector, target_vector = convert_json_to_vass(json_data)
-    max_path_length = 5
-    max_cycles = 3
+    n_states = len(json_data["states"])
+    n_transitions = len(json_data["transitions"])
+    max_path_length = 2*n_states*n_transitions    # |p| <= 2*|U|*|E|
+    max_cycles = n_transitions                    # |p| <= |E|
 
     lps_list = generate_linear_path_schemas(vass, start_state, end_state, max_path_length, max_cycles)
 
     for lps in lps_list:
-        print(lps)
         reachable, iterations = is_reachable(start_vector, target_vector, lps, False)
-        print(f"Target {target_vector} reachable: {reachable}")
         if reachable:
-            break
+            print(f"Target {target_vector} is reachable")
+            exit(0)
+    
+    print(f"Target {target_vector} is not reachable")
