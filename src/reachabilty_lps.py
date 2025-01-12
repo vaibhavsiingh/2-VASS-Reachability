@@ -1,7 +1,7 @@
-from defintion import *
+from src.defintion import *
 from scipy.optimize import nnls
 from scipy import linalg
-from utils import sum_vectors, apply_vectors
+from src.utils import sum_vectors, apply_vectors
 import numpy as np
 
 

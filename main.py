@@ -1,7 +1,7 @@
-from defintion import *
-from generate_lps import generate_linear_path_schemas   
-from reachabilty_lps import is_reachable
-from utils import convert_json_to_vass
+from src.defintion import *
+from src.generate_lps import generate_linear_path_schemas   
+from src.reachabilty_lps import is_reachable
+from src.utils import convert_json_to_vass
 import argparse
 import json
 import sys

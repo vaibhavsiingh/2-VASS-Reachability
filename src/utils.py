@@ -1,4 +1,4 @@
-from defintion import *
+from src.defintion import *
 
 def convert_json_to_vass(json_data):
     """
