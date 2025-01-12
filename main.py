@@ -35,7 +35,7 @@ if __name__ == '__main__':
     lps_list = generate_linear_path_schemas(vass, start_state, end_state, max_path_length, max_cycles)
 
     for lps in lps_list:
-        reachable, iterations = is_reachable(start_vector, target_vector, lps, False)
+        reachable, null_space = is_reachable(start_vector, target_vector, lps, False)
         if reachable:
             print(f"Target {target_vector} is reachable")
             exit(0)

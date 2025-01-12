@@ -1,7 +1,91 @@
 from defintion import *
 from scipy.optimize import nnls
+from scipy import linalg
 from utils import sum_vectors, apply_vectors
 import numpy as np
+
+
+def find_solution_space_basis(A: np.ndarray, b: np.ndarray, debug: bool = True) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Find a basis for the complete solution space of Ax = b.
+    
+    Args:
+        A: The coefficient matrix (2 x n)
+        b: The target vector (2 x 1)
+        debug: Whether to print debug information
+    
+    Returns:
+        Tuple of (particular_solution, solution_space_basis)
+        where solution_space_basis contains basis vectors spanning the solution space
+    """
+    
+    # Find particular solution using least squares
+    particular_solution, residual = nnls(A, b)
+    
+    if debug:
+        print(f"Particular solution: {particular_solution}")
+        print(f"Residual: {residual}")
+    
+    null_space = linalg.null_space(A)
+    
+    if debug:
+        print(f"Null space basis:\n{null_space}")
+    
+    # The complete solution space is: particular_solution + span(null_space)
+    return particular_solution, null_space
+
+def generate_solution_candidates(
+    particular_solution: np.ndarray,
+    basis_vectors: np.ndarray,
+    max_coefficient: int = 5,
+    debug: bool = True
+) -> List[np.ndarray]:
+    """
+    Generate integer solution candidates by exploring the solution space.
+    
+    Args:
+        particular_solution: A particular solution to Ax = b
+        basis_vectors: Basis vectors spanning the solution space
+        max_coefficient: Maximum absolute value for coefficients when exploring basis combinations
+        debug: Whether to print debug information
+    
+    Returns:
+        List of candidate integer solutions
+    """
+    solutions = []
+    
+    rounded_particular = np.round(particular_solution)
+    if np.all(rounded_particular >= 0):
+        solutions.append(rounded_particular)
+    
+    if basis_vectors.size == 0:
+        return solutions
+    
+    coefficients = np.arange(-max_coefficient, max_coefficient + 1)
+    num_basis = basis_vectors.shape[1]
+    
+    # For each combination of coefficients
+    from itertools import product
+    for coeff_combo in product(coefficients, repeat=num_basis):
+        # Compute linear combination
+        combination = np.zeros_like(particular_solution)
+        for i, coeff in enumerate(coeff_combo):
+            combination += coeff * basis_vectors[:, i]
+        
+        # Add to particular solution
+        candidate = particular_solution + combination
+        
+        # Round to integers and check validity
+        candidate_int = np.round(candidate)
+        
+        # Check if all components are non-negative
+        if np.all(candidate_int >= 0):
+            solutions.append(candidate_int)
+            
+            if debug:
+                print(f"Found valid solution: {candidate_int}")
+    
+    return solutions
 
 
 def simulate_path(current: Vector2D, scheme: LinearPathScheme, iterations: List[int], debug: bool = True) -> Tuple[bool, Optional[Vector2D]]:
@@ -83,6 +167,15 @@ def is_reachable(
     
     """
     Determines if the target position is reachable from the start position using a given linear path scheme.
+    Args:
+        start (Vector2D): The starting position.
+        target (Vector2D): The target position.
+        scheme (LinearPathScheme): The scheme defining the path with prefix, between, and suffix vectors, as well as loops.
+        debug (bool, optional): If True, prints debug information. Defaults to True.
+    Returns:
+        Tuple[bool, Optional[List[int]]]: A tuple where the first element is a boolean indicating if the target is reachable,
+                                        and the second element is a list of integers representing the number of iterations
+                                        for each loop in the scheme if reachable, otherwise None.
     """
     current = start
     if debug:
@@ -105,14 +198,17 @@ def is_reachable(
     # Add the total fixed effect from between vectors to current position
     current = current + total_between_effect
     
-    # Check if we're already at target after prefix and between vectors
-    if current + suffix_effect == target:
-        return True, [0] * len(scheme.loops)
-    
-    if current.x < 0 or current.y < 0:
-        return False, None
-    
     num_loops = len(scheme.loops)
+    if num_loops == 0:
+        if debug:
+            print("No loops in scheme")
+        valid, final_pos = simulate_path(start,scheme,[],debug)
+        if valid and final_pos == target:
+            return True,None
+        else:
+            return False, None
+
+        
     A = np.zeros((2, num_loops))
     
     # Build coefficient matrix
@@ -125,34 +221,32 @@ def is_reachable(
         target.x - current.x - suffix_effect.x,
         target.y - current.y - suffix_effect.y
     ])
+
     if debug:
-        print(A,b)
+        print(f"Matrix A shape: {A.shape}")
+        print(f"Vector b shape: {b.shape}")
+        print(f"Matrix A:\n{A}")
+        print(f"Vector b: {b}")
     
     try:
+        particular_solution, solution_basis = find_solution_space_basis(A, b, debug)
         
-        x, residual = nnls(A, b)
-        if residual < 1e-10:
-            iterations = [round(val) for val in x]
+        # Generate candidate solutions
+        candidates = generate_solution_candidates(particular_solution, solution_basis, debug=debug)
+        
+        # Test each candidate
+        for candidate in candidates:
+            iterations = [int(x) for x in candidate]
             if debug:
-                print(f"Proposed iterations: {iterations}")
+                print(f"Testing candidate solution: {iterations}")
             
-            # Simulate the path to verify
-            valid, final_pos = simulate_path(start, scheme, iterations, debug)  # Note: starting from original position
-            if not valid:
-                if debug:
-                    print("simulate_path returned invalid")
-                return False, None
+            valid, final_pos = simulate_path(start, scheme, iterations, debug)
             
-            if debug:
-                print(f"Final position: {final_pos}")
-            
-            # Check if target reached
-            if final_pos == target:
+            if valid and final_pos == target:
                 return True, iterations
-            
-            if debug:
-                print(f"Did not reach target. Got {final_pos}, wanted {target}")
+
     except ImportError:
         print("SciPy not available")
+        return [], None
     
     return False, None

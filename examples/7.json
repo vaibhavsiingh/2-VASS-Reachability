@@ -1,0 +1,12 @@
+{
+    "states": [0, 1, 2],
+    "transitions": [
+        {"from": 0, "to": 1, "vector": [0, -1]},
+        {"from": 1, "to": 2, "vector": [1, 0]},
+        {"from": 1, "to": 1, "vector": [-1, 1]}
+    ],
+    "initial_state": 0,
+    "final_state": 2,
+    "initial_vector": [0, 1],
+    "final_vector": [0, 0]
+}
