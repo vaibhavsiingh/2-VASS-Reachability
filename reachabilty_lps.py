@@ -83,15 +83,6 @@ def is_reachable(
     
     """
     Determines if the target position is reachable from the start position using a given linear path scheme.
-    Args:
-        start (Vector2D): The starting position.
-        target (Vector2D): The target position.
-        scheme (LinearPathScheme): The scheme defining the path with prefix, between, and suffix vectors, as well as loops.
-        debug (bool, optional): If True, prints debug information. Defaults to True.
-    Returns:
-        Tuple[bool, Optional[List[int]]]: A tuple where the first element is a boolean indicating if the target is reachable,
-                                          and the second element is a list of integers representing the number of iterations
-                                          for each loop in the scheme if reachable, otherwise None.
     """
     current = start
     if debug:
