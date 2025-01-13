@@ -133,7 +133,7 @@ def find_simple_paths(vass: VASS2D, start: int, end: int, max_length: int) -> Li
 
     # Helper DFS function to recursively identify the paths
     def dfs(current: int, path: List[int], visited: Set[int], paths: List[List[int]]):
-        if len(path) > max_length:
+        if len(path) > max_length+1:
             return
         if current == end:
             paths.append(path[:])

@@ -1,5 +1,5 @@
 from src.defintion import *
-from src.utils import find_cycles, find_simple_paths, compute_path_effect
+from src.utils import find_cycles, find_simple_paths
 
 
 def generate_linear_path_schemas(vass: VASS2D, start: int, end: int, 
