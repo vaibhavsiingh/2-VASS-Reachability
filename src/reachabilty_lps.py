@@ -1,4 +1,4 @@
-from src.defintion import *
+from src.definition import *
 from scipy.optimize import nnls
 from scipy import linalg
 from src.utils import sum_vectors, apply_vectors

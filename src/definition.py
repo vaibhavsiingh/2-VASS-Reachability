@@ -32,6 +32,11 @@ class LinearPathScheme:
     between_vectors: List[List[Vector2D]]  # List of vector lists between each loop
     suffix_vectors: List[Vector2D]  
 
+    def __eq__(self, other):
+        if not isinstance(other, LinearPathScheme):
+            return False
+        return self.prefix_vectors == other.prefix_vectors and self.loops == other.loops and self.between_vectors == other.between_vectors and self.suffix_vectors == other.suffix_vectors
+
 @dataclass
 class State:
     id: int

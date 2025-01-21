@@ -1,6 +1,5 @@
-from src.defintion import Vector2D, VASS2D, Loop, State
+from src.definition import Vector2D, VASS2D, Loop, State
 from src.utils import sum_vectors, convert_json_to_vass, compute_path_effect, compute_guard, find_simple_paths, find_cycles
-from collections import Counter
 
 def test_convert_json_to_vass():
     # Test input JSON
@@ -9,12 +8,12 @@ def test_convert_json_to_vass():
         "transitions": [
             {"from": 0, "to": 1, "vector": [1, 2]},
             {"from": 1, "to": 2, "vector": [3, 4]},
-            {"from": 2, "to": 0, "vector": [-1, -2]},
+            {"from": 2, "to": 0, "vector": [-1, -2]}
         ],
         "initial_state": 0,
         "final_state": 2,
         "initial_vector": [0, 0],
-        "final_vector": [5, 6],
+        "final_vector": [5, 6]
     }
 
     # Expected results

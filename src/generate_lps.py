@@ -1,4 +1,4 @@
-from src.defintion import *
+from src.definition import *
 from src.utils import find_cycles, find_simple_paths
 
 
@@ -81,6 +81,8 @@ def generate_linear_path_schemas(vass: VASS2D, start: int, end: int,
 
                 between_vectors.append(transitions)
 
+
+
         # Preparing suffix_vectors
         suffix_vectors = []
         last_cycle_pos = all_cycles[-1][0]
@@ -100,5 +102,5 @@ def generate_linear_path_schemas(vass: VASS2D, start: int, end: int,
             suffix_vectors=suffix_vectors
         )
         schemas.append(schema)
-
+        
     return schemas

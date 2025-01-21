@@ -1,4 +1,4 @@
-from src.defintion import *
+from src.definition import *
 from src.generate_lps import generate_linear_path_schemas   
 from src.reachabilty_lps import is_reachable
 from src.utils import convert_json_to_vass
