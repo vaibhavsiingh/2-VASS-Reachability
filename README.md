@@ -54,7 +54,7 @@ Example JSON file `examples/1.json`:
 }
 ```
 ## Files and Functionality
-```definition.py``` \
+```src/definition.py``` \
 Defines core data structures for 2-VASS, such as:
 
 - ```Vector2D```: Represents a 2D vector with operations like addition and scaling.
@@ -62,7 +62,7 @@ Defines core data structures for 2-VASS, such as:
 - ```LinearPathScheme```: Stores prefix vectors, loops, between vectors, and suffix vectors.
 - ```State``` and ```VASS2D```: Represents states and transitions in a 2-VASS system.
 
-```generate_lps.py```\
+```src/generate_lps.py```\
 Implements generate_linear_path_schemas, which:
 
 - Identifies simple paths between the initial and final states.
@@ -76,7 +76,7 @@ Entry point of the program:
 - Converts the JSON into a 2-VASS structure.
 - Generates linear path schemas and checks target vector reachability.
 
-```reachability_lps.py```\
+```src/reachability_lps.py```\
 Implements is_reachable to:
 
 - Simulate paths based on a given LPS.
@@ -104,3 +104,9 @@ pip install numpy scipy
 python main.py --config <path to your json file>
 ```
 
+## Testing
+I have created tests for functions in ```utils.py``` in ```tests/test_functions/test_utils.py```. To run the tests, run the following command in home directory
+```bash
+pytest
+```
+There are 6 tests in total for 6 different functions. 
